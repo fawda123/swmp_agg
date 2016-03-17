@@ -7,25 +7,25 @@ shinyUI(fluidPage(
   theme = 'styles.css',
   
   # Application title
-  h2("Agregation of SWMP parameters within reserves"),
+  h2("Aggregation of SWMP parameters within/between reserves"),
   
   h4('Created by Marcus W. Beck,', a('beck.marcus@epa.gov', href = 'mailto:beck.marcus@epa.gov'), "Todd O'Brien,", a('todd.obrien@noaa.gov', href = 'mailto:todd.obrien@noaa.gov')),
   
-  p('This interactive widget provides .... from the System Wide Monitoring Program of the National Estuarine Research Reserve System ', a('(NERRS).', href = 'http://www.nerrs.noaa.gov/', target = '_blank'), '....The data include observations through December 2015 and are current as of January 2016.  Plots are based on daily averages for each parameter. See the', a('GitHub repository', href='https://github.com/fawda123/swmp_agg', target = '_blank'), 'for source code or to post', a('issues.', href='https://github.com/fawda123/swmp_agg/issues', target = '_blank')),
+  p('This interactive widget can be used to compare time series of site data within and between reserves from the System Wide Monitoring Program of the National Estuarine Research Reserve System ', a('(NERRS).', href = 'http://www.nerrs.noaa.gov/', target = '_blank'), 'Data are based on monthly averages of raw observations through December 2015 and are current as of January 2016.  Quarterly (every three months) and annual aggregations are based on medians of the monthly summaries. Data for each plot can be viewed on the tables tab.  Downloads of the plots and tables are available on the respective tab. See the', a('GitHub repository', href='https://github.com/fawda123/swmp_agg', target = '_blank'), 'for source code or to post', a('issues.', href='https://github.com/fawda123/swmp_agg/issues', target = '_blank')),
   
   # buttons on top
   fluidRow(
     
     column(2,
-      selectInput('aggby', h5('Aggregation'), 
+      selectInput('aggby', h6('Aggregate by'), 
         choices = c('month', 'quarters', 'year'),
-        selected = 'year'
+        selected = 'month'
       )
 
     ),
     
     column(3,
-      sliderInput("years", label = h6('Range'),  
+      sliderInput("years", label = h6('Date range'),  
         min = 1995, max = 2015, 
         value = c(1995, 2015),
         sep = '', ticks = TRUE
@@ -34,13 +34,19 @@ shinyUI(fluidPage(
     ), 
     
     column(1, 
-      h6(''),
-      checkboxGroupInput('lns', label = '', choices = 'Lines', selected = 'Lines', inline = TRUE)
-    ),
+      h6('Aesthetics'),
+      checkboxGroupInput('lns', label = NULL, choices = 'Lines', selected = 'Lines', inline = TRUE),
+      checkboxGroupInput('pts', label = NULL, choices = 'Points', selected = 'Points', inline = TRUE)
+    ), 
     
     column(1, 
+      h6('Y-axis'),
+      checkboxGroupInput('axs', label = NULL, choices = 'Common', inline = TRUE)
+    ), 
+    
+    column(3, 
       h6(''),
-      checkboxGroupInput('pts', label = '', choices = 'Points', selected = 'Points', inline = TRUE)
+      uiOutput('ylims')
     )
     
   ),
@@ -49,7 +55,7 @@ shinyUI(fluidPage(
     
     tabsetPanel(
       
-      tabPanel('Plot',
+      tabPanel('Plots',
     
         ## first
         column(2, 
@@ -101,38 +107,45 @@ shinyUI(fluidPage(
             ".shiny-output-error { visibility: hidden; }",
             ".shiny-output-error:before { visibility: hidden; }")
         
-      )#, 
-# 
-#       tabPanel('Tabular output',
-#         
-#         column(12, 
-#           p('Tabular output.'),
-#           dataTableOutput('outtab')
-#         )
-#         
-#       ), 
-# 
-#       tabPanel('Downloads',
-#         
-#           column(7, 
-#             h4('Figure'), 
-#             column(6, 
-#               numericInput('height', 'Plot height (in)', value = 8, min = 0, step = 1),
-#               numericInput('width', 'Plot width (in)', value = 13, min = 0, step = 1)
-#               ),
-#             column(6, 
-#               HTML('<p></p>'),
-#               downloadButton('downloadplot', 'Plot')
-#               )
-#             ),
-#           column(4, h4('Table'),
-#             column(4, 
-#               p(), 
-#               downloadButton('tab', 'Table')
-#             )
-#           )
-#         
-#       )
+      ), 
+
+      tabPanel('Tables',
+        
+        column(6, 
+          h6('First reserve'),
+          dataTableOutput('tab1')
+        ), 
+        
+        column(6, 
+          h6('Second reserve'),
+          dataTableOutput('tab2')
+        )
+        
+      ),
+      
+      tabPanel('Downloads',
+        
+        column(6, 
+          h6('First reserve'), 
+          numericInput('height1', 'Plot height (in)', value = 4, min = 0, step = 1),
+          numericInput('width1', 'Plot width (in)', value = 10, min = 0, step = 1),
+          p(),
+          downloadButton('downloadplot1', 'Download plot'),
+          p(),
+          downloadButton('tabsv1', 'Download table')
+        ), 
+        
+        column(6, 
+          h6('Second reserve'), 
+          numericInput('height2', 'Plot height (in)', value = 4, min = 0, step = 1),
+          numericInput('width2', 'Plot width (in)', value = 10, min = 0, step = 1),
+          p(),
+          downloadButton('downloadplot2', 'Download plot'),
+          p(),
+          downloadButton('tabsv2', 'Download table')
+        )
+
+      )
       
   ))
     

@@ -5,6 +5,7 @@ library(SWMPr)
 library(httr)
 library(XML)
 library(data.table)
+library(shinyBS)
 
 # master data file
 loc <- 'https://github.com/fawda123/swmp_comp/blob/master/data/all_dat.RData?raw=true'
@@ -209,6 +210,25 @@ shinyServer(function(input, output, session) {
     
   })
 
+  # apply common axis?
+  output$ylims <- renderUI({
+    
+    axs <- !is.null(input$axs)
+    if(axs){
+      
+      rngs <- range(c(dat1()$value, dat2()$value), na.rm = TRUE)
+      rngs <- round(rngs, 0.1)
+      
+      sliderInput("ylims", label = '',  
+        min = min(rngs), max = max(rngs), 
+        value = rngs,
+        sep = '', ticks = TRUE
+      )
+      
+    }
+    
+  })
+  
   #### plot, table
   
   ## first plot
@@ -221,12 +241,16 @@ shinyServer(function(input, output, session) {
   
   plotInput1 <- function(){
 
-    # boolean points/lines
+    # boolean points/lines, ylims
     pts <- !is.null(input$pts)
     lns <- !is.null(input$lns)
+    if(!is.null(input$axs))
+      lims <- input$ylims
+    else 
+      lims <- NULL
     
     # output
-    plo_fun(dat1(), aggby = input$aggby, rng = input$years, pts = pts, lns = lns)
+    plo_fun(dat1(), aggby = input$aggby, rng = input$years, pts = pts, lns = lns, lims = lims)
     
   }
   
@@ -239,62 +263,79 @@ shinyServer(function(input, output, session) {
   
   plotInput2 <- function(){
 
-    # boolean points/lines
+    # boolean points/lines, ylims
     pts <- !is.null(input$pts)
     lns <- !is.null(input$lns)
+    if(!is.null(input$axs))
+      lims <- input$ylims
+    else 
+      lims <- NULL
     
     # output
-    plo_fun(dat2(), aggby = input$aggby, rng = input$years, pts = pts, lns = lns)
+    plo_fun(dat2(), aggby = input$aggby, rng = input$years, pts = pts, lns = lns, lims = lims)
     
   }
   
-# 
-#   # tabular data
-#   tabInput <- function(){
-#       
-#     # input from ui
-#     stat <- input$stat
-#     var <- input$var
-#     years <- input$years
-#     
-#     # output
-#     plot_summary(dat(), var, years, sum_out = TRUE)
-#     
-#     }
-#   
-#   output$outplot <- renderPlot({
-#   
-#     plotInput()
-#     
-#     }, height = 600, width = 1100)
-#   
-#   # table 
-#   output$outtab_sum_mo <- renderDataTable({
-#     tabInput()$sum_mo
-#     })
-# 
-#   ## downloads
-#   
-#   # plot
-#   output$downloadplot <- downloadHandler(
-#     filename = function() { paste(input$stat, '.pdf', sep='') },
-#     content = function(file) {
-#     
-#       pdf(file, width = input$width, height =input$height, family = 'serif')
-#       plotInput()
-#       dev.off()
-#       
-#     }
-#   )
-# 
-#   # table 
-#   output$tab_mo <- downloadHandler(
-#     filename = function() { paste(input$stat, '_tab.csv', sep='') },
-#     content = function(file) {
-#   
-#       write.csv(tabInput()$sum_mo, file, quote = F, row.names = F)
-#       
-#    }
-#   )
+  # output table 1
+  tabInput1 <- function(){
+    plo_fun(dat1(), aggby = input$aggby, rng = input$years, tab = TRUE)
+  }
+  output$tab1 <- renderDataTable({
+    tabInput1()
+  })
+  
+  # output table 2
+  tabInput2 <- function(){
+    plo_fun(dat2(), aggby = input$aggby, rng = input$years, tab = TRUE)
+  }
+  output$tab2 <- renderDataTable({
+    tabInput2()
+  })
+  
+  #### downloads
+  
+  # plot 1
+  output$downloadplot1 <- downloadHandler(
+    filename = function() { paste(input$resv1, '_plt.pdf', sep='') },
+    content = function(file) {
+    
+      pdf(file, width = input$width1, height =input$height1, family = 'serif')
+      plotInput1()
+      dev.off()
+      
+   }
+  )
+  
+  # table 1
+  output$tabsv1 <- downloadHandler(
+    filename = function() { paste(input$resv1, '_tab.csv', sep='') },
+    content = function(file) {
+      
+      write.csv(tabInput1(), file, quote = F, row.names = F)
+      
+    }
+  )
+  
+  # plot 2
+  output$downloadplot2 <- downloadHandler(
+    filename = function() { paste(input$resv2, '_plt.pdf', sep='') },
+    content = function(file) {
+    
+      pdf(file, width = input$width2, height =input$height2, family = 'serif')
+      plotInput2()
+      dev.off()
+      
+    }
+  )
+
+  # table 2
+  output$tabsv2 <- downloadHandler(
+    filename = function() { paste(input$resv2, '_tab.csv', sep='') },
+    content = function(file) {
+  
+      write.csv(tabInput2(), file, quote = F, row.names = F)
+      
+    }
+  )
 
 })

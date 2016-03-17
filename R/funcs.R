@@ -1,5 +1,5 @@
 # summarize input data, create plot
-plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lns = TRUE, pts = TRUE){
+plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = NULL, lns = TRUE, pts = TRUE, tab = FALSE){
 
   # label lookup
   lab_look <- list(
@@ -51,7 +51,11 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lns = TR
       los = quantile(value, 0.05, na.rm = TRUE)
       ) %>% 
     ungroup 
+
+  # return table if T
+  if(tab) return(data.frame(to_plo, stringsAsFactors = FALSE))
   
+  # create date rng limits if provided
   if(!is.null(rng))
     rng <- as.Date(c(paste0(rng[1], '-01-01'), paste0(rng[2], '-12-31')))
 
@@ -67,13 +71,17 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lns = TR
       axis.line.x = element_line(size = 0.5),
       axis.line.y = element_line(size = 0.5) 
       )
+  
+  # other aesthetic exceptions
   if(lns)
     p <- p + geom_line()
   if(pts)
     p <- p + geom_point(size = 2.5)
   if(pts & errbar) 
     p <- p + geom_errorbar(aes(ymin = los, ymax = his), width = 40)
+  if(!is.null(lims))
+    p <- p + scale_y_continuous(ylab, limits = lims)
   
-  return(p)
+  print(p)
   
 }

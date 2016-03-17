@@ -46,9 +46,9 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
   }
   to_plo <- group_by(to_plo, stat, datetimestamp) %>%
     summarize(
-      med = median(value, na.rm = TRUE), 
-      his = quantile(value, 0.95, na.rm = TRUE), 
-      los = quantile(value, 0.05, na.rm = TRUE)
+      ave = mean(value, na.rm = TRUE), 
+      max = max(value, na.rm = TRUE), 
+      min = min(value, na.rm = TRUE)
       ) %>% 
     ungroup 
 
@@ -60,7 +60,7 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
     rng <- as.Date(c(paste0(rng[1], '-01-01'), paste0(rng[2], '-12-31')))
 
   # plot
-  p <- ggplot(to_plo, aes(x = datetimestamp, y = med, colour = stat)) +
+  p <- ggplot(to_plo, aes(x = datetimestamp, y = ave, colour = stat)) +
     scale_y_continuous(ylab) +
     scale_x_date(limits = rng) +
     theme_minimal() + 
@@ -78,7 +78,7 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
   if(pts)
     p <- p + geom_point(size = 2.5)
   if(pts & errbar) 
-    p <- p + geom_errorbar(aes(ymin = los, ymax = his), width = 40)
+    p <- p + geom_errorbar(aes(ymin = min, ymax = max), width = 40)
   if(!is.null(lims))
     p <- p + scale_y_continuous(ylab, limits = lims)
   

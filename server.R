@@ -8,8 +8,8 @@ library(data.table)
 library(shinyBS)
 
 # master data file
-loc <- 'https://github.com/fawda123/swmp_comp/blob/master/data/all_dat.RData?raw=true'
-load(url(loc))
+# this is the same file from swmp_comp app
+load(file = 'data/all_dat.RData')
 
 source('R/funcs.R')
 

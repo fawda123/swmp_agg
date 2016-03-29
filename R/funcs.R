@@ -24,7 +24,6 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
     sdwdir = 'Wind direction (sd, degrees)',
     totpar = 'Total PAR (mmol/m2)',
     totprcp = 'Total precipitation (mm)',
-    cumprcp = 'Cumulative precipitation (mm)',
     totsorad = 'Total solar radiation (watts/m2)',
     po4f = 'Orthophosphate (mg/L)', 
     nh4f = 'Ammonium (mg/L)',

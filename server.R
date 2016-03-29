@@ -84,7 +84,7 @@ shinyServer(function(input, output, session) {
     
     selectInput("resv1", label = h6('Reserve'), 
       choices = resv1,
-      selected = 'del')  
+      selected = input$resv1)  
     
   })
   
@@ -170,7 +170,7 @@ shinyServer(function(input, output, session) {
     
     selectInput("resv2", label = h6('Reserve'), 
       choices = resv2,
-      selected = 'pdb')  
+      selected = input$resv2)  
     
   })
   
@@ -278,7 +278,10 @@ shinyServer(function(input, output, session) {
   
   # output table 1
   tabInput1 <- function(){
-    plo_fun(dat1(), aggby = input$aggby, rng = input$years, tab = TRUE)
+    out <- plo_fun(dat1(), aggby = input$aggby, rng = input$years, tab = TRUE) %>% 
+      select(-max, -min)
+    names(out)[names(out) %in% 'ave'] <- input$parm1
+    return(out)
   }
   output$tab1 <- renderDataTable({
     tabInput1()
@@ -286,7 +289,10 @@ shinyServer(function(input, output, session) {
   
   # output table 2
   tabInput2 <- function(){
-    plo_fun(dat2(), aggby = input$aggby, rng = input$years, tab = TRUE)
+    out <- plo_fun(dat2(), aggby = input$aggby, rng = input$years, tab = TRUE) %>% 
+      select(-max, -min)
+    names(out)[names(out) %in% 'ave'] <- input$parm2
+    return(out)
   }
   output$tab2 <- renderDataTable({
     tabInput2()

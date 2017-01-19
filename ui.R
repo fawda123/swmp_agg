@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyBS)
+library(dplyr)
 
 # max year from data
 data(all_dat)

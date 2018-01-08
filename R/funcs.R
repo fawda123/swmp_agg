@@ -51,12 +51,17 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
       ) %>% 
     ungroup 
 
-  # return table if T
-  if(tab) return(data.frame(to_plo, stringsAsFactors = FALSE))
-  
   # create date rng limits if provided
   if(!is.null(rng))
     rng <- as.Date(c(paste0(rng[1], '-01-01'), paste0(rng[2], '-12-31')))
+  else
+    rng <- range(to_plo$datetimestamp, na.rm = TRUE)
+  
+  # return table if T
+  if(tab){
+    to_plo <- to_plo[to_plo$datetimestamp >= rng[1] & to_plo$datetimestamp <= rng[2], ]
+    return(data.frame(to_plo, stringsAsFactors = FALSE))
+  } 
 
   # plot
   p <- ggplot(to_plo, aes(x = datetimestamp, y = ave, colour = stat)) +

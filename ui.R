@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyBS)
 library(dplyr)
+library(shinyCustom)
 
 # max year from data
 data(all_dat)
@@ -13,13 +14,14 @@ yrmax <- bind_rows(all_dat) %>%
 shinyUI(fluidPage(
   
   theme = 'styles.css',
+  useShinyCustom(slider_delay = '10'),
   
   # Application title
   h2("Aggregation of SWMP parameters within/between reserves"),
   
-  h4('Created by Marcus W. Beck,', a('beck.marcus@epa.gov', href = 'mailto:beck.marcus@epa.gov'), "Todd O'Brien,", a('todd.obrien@noaa.gov', href = 'mailto:todd.obrien@noaa.gov')),
+  h4('Created by Marcus W. Beck,', a('marcusb@sccwrp.org', href = 'mailto:marcusb@sccwrp.org'), "Todd O'Brien,", a('todd.obrien@noaa.gov', href = 'mailto:todd.obrien@noaa.gov')),
   
-  p('This interactive widget can be used to compare time series of site data within and between reserves from the System Wide Monitoring Program of the National Estuarine Research Reserve System ', a('(NERRS).', href = 'http://www.nerrs.noaa.gov/', target = '_blank'), 'Data are based on monthly averages of raw observations through December 2016 and are current as of January 18, 2017. Two plots are shown for selected parameters and reserves that include time series of all sites at each location.  The monthly averages are shown by default. Data can also be viewed as quarterly (every three months) or annual aggregations based on averages of the monthly summaries. Tabular data for each plot can be viewed on the tables tab and downloads of the plots and tables are available on the downloads tab. See the', a('GitHub repository', href='https://github.com/fawda123/swmp_agg', target = '_blank'), 'for source code or to post', a('issues', href='https://github.com/fawda123/swmp_agg/issues', target = '_blank'), 'if problems occur.'),
+  p('This interactive widget can be used to compare time series of site data within and between reserves from the System Wide Monitoring Program of the National Estuarine Research Reserve System ', a('(NERRS).', href = 'http://www.nerrs.noaa.gov/', target = '_blank'), 'Data are based on monthly averages of raw observations through December 2017 and are current as of January 24, 2018. Two plots are shown for selected parameters and reserves that include time series of all sites at each location.  The monthly averages are shown by default. Data can also be viewed as quarterly (every three months) or annual aggregations based on averages of the monthly summaries. Tabular data for each plot can be viewed on the tables tab and downloads of the plots and tables are available on the downloads tab. See the', a('GitHub repository', href='https://github.com/fawda123/swmp_agg', target = '_blank'), 'for source code or to post', a('issues', href='https://github.com/fawda123/swmp_agg/issues', target = '_blank'), 'if problems occur.'),
   
   # buttons on top
   fluidRow(
@@ -33,7 +35,7 @@ shinyUI(fluidPage(
     ),
     
     column(3,
-      sliderInput("years", label = h6('Date range'),  
+      customSliderInput("years", label = h6('Date range'),  
         min = 1995, max = yrmax, 
         value = c(1995, yrmax),
         sep = '', ticks = TRUE

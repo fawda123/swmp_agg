@@ -4,8 +4,8 @@ library(dplyr)
 library(SWMPr)
 library(httr)
 library(XML)
-library(data.table)
 library(shinyBS)
+library(lubridate)
 
 # master data file
 # this is the same file from swmp_comp app
@@ -94,12 +94,14 @@ shinyServer(function(input, output, session) {
     # select the stations based on reserve, parameter inputs
     parm1 <- input$parm1
     resv1 <- input$resv1
-    if(!is.null(resv1)){
-      stsl1 <- all_dat[[parm1]] %>% 
-        filter(grepl(paste0('^', resv1), stat)) %>% 
-        .$stat %>% 
-        unique
-    }
+    
+    req(resv1)
+    
+    stsl1 <- all_dat[[parm1]] %>% 
+      filter(grepl(paste0('^', resv1), stat)) %>% 
+      .$stat %>% 
+      unique
+    
     checkboxGroupInput('stsl1', label = h6('Stations'), choices = stsl1, selected = stsl1, inline = TRUE)
     
   })
@@ -180,12 +182,14 @@ shinyServer(function(input, output, session) {
     # select the stations based on reserve, parameter inputs
     parm2 <- input$parm2
     resv2 <- input$resv2
-    if(!is.null(resv2)){
-      stsl2 <- all_dat[[parm2]] %>% 
-        filter(grepl(paste0('^', resv2), stat)) %>% 
-        .$stat %>% 
-        unique
-    }
+    
+    req(resv2)
+    
+    stsl2 <- all_dat[[parm2]] %>% 
+      filter(grepl(paste0('^', resv2), stat)) %>% 
+      .$stat %>% 
+      unique
+    
     checkboxGroupInput('stsl2', label = h6('Stations'), choices = stsl2, selected = stsl2, inline = TRUE)
     
   })
@@ -195,6 +199,8 @@ shinyServer(function(input, output, session) {
   ## for first plot
   dat1 <- reactive({
     
+    req(input$stsl1)
+    
     toplo <- all_dat[[input$parm1]] %>% 
       filter(stat %in% input$stsl1)
 
@@ -202,6 +208,8 @@ shinyServer(function(input, output, session) {
     
   })
   dat2 <- reactive({
+    
+    req(input$stsl2)
     
     toplo <- all_dat[[input$parm2]] %>% 
       filter(stat %in% input$stsl2)
@@ -248,6 +256,8 @@ shinyServer(function(input, output, session) {
       lims <- input$ylims
     else 
       lims <- NULL
+
+    req(nrow(dat1()) > 0)
     
     # output
     plo_fun(dat1(), aggby = input$aggby, rng = input$years, pts = pts, lns = lns, lims = lims)
@@ -270,6 +280,8 @@ shinyServer(function(input, output, session) {
       lims <- input$ylims
     else 
       lims <- NULL
+    
+    req(nrow(dat2()) > 0)
     
     # output
     plo_fun(dat2(), aggby = input$aggby, rng = input$years, pts = pts, lns = lns, lims = lims)

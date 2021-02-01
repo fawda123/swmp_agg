@@ -1,7 +1,5 @@
 library(shiny)
-library(shinyBS)
 library(dplyr)
-library(shinyCustom)
 
 # max year from data
 data(all_dat)
@@ -14,8 +12,7 @@ yrmax <- bind_rows(all_dat) %>%
 shinyUI(fluidPage(
   
   theme = 'styles.css',
-  useShinyCustom(slider_delay = '10'),
-  
+
   # Application title
   h2("Aggregation of SWMP parameters within/between reserves"),
   
@@ -35,7 +32,7 @@ shinyUI(fluidPage(
     ),
     
     column(3,
-      customSliderInput("years", label = h6('Date range'),  
+      sliderInput("years", label = h6('Date range'),  
         min = 1995, max = yrmax, 
         value = c(1995, yrmax),
         sep = '', ticks = TRUE

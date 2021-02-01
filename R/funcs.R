@@ -35,21 +35,16 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
   ylab <- lab_look[[as.character(unique(dat_in$variable))]]
 
   # get summaries by station given agg period
-  if(aggby != 'day'){
-    to_plo <- mutate(dat_in, 
-      datetimestamp = as.IDate(datetimestamp), 
-      datetimestamp = round(datetimestamp, digits = aggby)
-      )
-  } else {
-    to_plo <- dat_in
-  }
-  to_plo <- group_by(to_plo, stat, datetimestamp) %>%
-    summarize(
+  to_plo <- mutate(dat_in, 
+      datetimestamp = lubridate::round_date(datetimestamp, unit = aggby)
+    ) %>% 
+    dplyr::group_by(stat, datetimestamp) %>%
+    dplyr::summarise(
       ave = mean(value, na.rm = TRUE), 
-      max = max(value, na.rm = TRUE), 
-      min = min(value, na.rm = TRUE)
-      ) %>% 
-    ungroup 
+      max = max(value), 
+      min = min(value), 
+      .groups = 'drop'
+      ) 
 
   # create date rng limits if provided
   if(!is.null(rng))

@@ -5,7 +5,5 @@ account: beckmw
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 89379
-bundleId: 7253958
+bundleId: 8781788
 url: https://beckmw.shinyapps.io/swmp_agg/
-when: 1684862671.05249
-lastSyncTime: 1684862671.0525

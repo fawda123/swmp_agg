@@ -1,11 +1,12 @@
 # packages to use
-library(ggplot2)
 library(dplyr)
 library(SWMPr)
 library(httr)
 library(XML)
 library(shinyBS)
 library(lubridate)
+library(plotly)
+library(DT)
 
 # master data file
 # this is the same file from swmp_comp app
@@ -241,11 +242,11 @@ shinyServer(function(input, output, session) {
   
   ## first plot
   # whole plot 
-  output$outplot1 <- renderPlot({
+  output$outplot1 <- renderPlotly({
 
     plotInput1()
     
-  }, height = 350, width = 1200)
+  })
   
   plotInput1 <- function(){
 
@@ -265,11 +266,11 @@ shinyServer(function(input, output, session) {
   }
   
   # second plot 
-  output$outplot2 <- renderPlot({
+  output$outplot2 <- renderPlotly({
 
     plotInput2()
     
-  }, height = 350, width = 1200)
+  })
   
   plotInput2 <- function(){
 
@@ -295,8 +296,10 @@ shinyServer(function(input, output, session) {
     names(out)[names(out) %in% 'ave'] <- input$parm1
     return(out)
   }
-  output$tab1 <- renderDataTable({
-    tabInput1()
+  output$tab1 <- renderDT({
+    tabInput1() %>% 
+      datatable(rownames = F) %>%
+      formatRound(columns = 3, digits = 3)
   })
   
   # output table 2
@@ -306,23 +309,13 @@ shinyServer(function(input, output, session) {
     names(out)[names(out) %in% 'ave'] <- input$parm2
     return(out)
   }
-  output$tab2 <- renderDataTable({
-    tabInput2()
+  output$tab2 <- renderDT({
+    tabInput2() %>% 
+      datatable(rownames = F) %>%
+      formatRound(columns = 3, digits = 3)
   })
   
   #### downloads
-  
-  # plot 1
-  output$downloadplot1 <- downloadHandler(
-    filename = function() { paste(input$resv1, '_plt.pdf', sep='') },
-    content = function(file) {
-    
-      pdf(file, width = input$width1, height =input$height1, family = 'serif')
-      plotInput1()
-      dev.off()
-      
-   }
-  )
   
   # table 1
   output$tabsv1 <- downloadHandler(
@@ -334,18 +327,6 @@ shinyServer(function(input, output, session) {
     }
   )
   
-  # plot 2
-  output$downloadplot2 <- downloadHandler(
-    filename = function() { paste(input$resv2, '_plt.pdf', sep='') },
-    content = function(file) {
-    
-      pdf(file, width = input$width2, height =input$height2, family = 'serif')
-      plotInput2()
-      dev.off()
-      
-    }
-  )
-
   # table 2
   output$tabsv2 <- downloadHandler(
     filename = function() { paste(input$resv2, '_tab.csv', sep='') },

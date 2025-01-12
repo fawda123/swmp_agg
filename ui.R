@@ -1,5 +1,7 @@
 library(shiny)
 library(dplyr)
+library(plotly)
+library(DT)
 
 # max year from data
 data(all_dat)
@@ -18,7 +20,7 @@ shinyUI(fluidPage(
   
   h4('Created by Marcus W. Beck,', a('mbeck@tbep.org', href = 'mailto:mbeck@tbep.org'), "Todd O'Brien,", a('todd.obrien@noaa.gov', href = 'mailto:todd.obrien@noaa.gov')),
   
-  p('This interactive widget can be used to compare time series of site data within and between reserves from the System Wide Monitoring Program of the National Estuarine Research Reserve System ', a('(NERRS).', href = 'http://www.nerrs.noaa.gov/', target = '_blank'), 'Data are based on monthly averages of raw observations through December 2024 and are current as of January 10th, 2025. Two plots are shown for selected parameters and reserves that include time series of all sites at each location.  The monthly averages are shown by default. Data can also be viewed as quarterly (every three months) or annual aggregations based on averages of the monthly summaries. Tabular data for each plot can be viewed on the tables tab and downloads of the plots and tables are available on the downloads tab. See the', a('GitHub repository', href='https://github.com/fawda123/swmp_agg', target = '_blank'), 'for source code or to post', a('issues', href='https://github.com/fawda123/swmp_agg/issues', target = '_blank'), 'if problems occur.'),
+  p('This interactive widget can be used to compare time series of site data within and between reserves from the System Wide Monitoring Program of the National Estuarine Research Reserve System ', a('(NERRS).', href = 'http://www.nerrs.noaa.gov/', target = '_blank'), 'Data are based on monthly averages of raw observations through December 2024 and are current as of January 10th, 2025. Two plots are shown for selected parameters and reserves that include time series of all sites at each location.  The monthly averages are shown by default. Data can also be viewed as quarterly (every three months) or annual aggregations based on averages of the monthly summaries. Tabular data for each plot can be viewed and downloaded on the tables tab. See the', a('GitHub repository', href='https://github.com/fawda123/swmp_agg', target = '_blank'), 'for source code or to post', a('issues', href='https://github.com/fawda123/swmp_agg/issues', target = '_blank'), 'if problems occur.'),
   
   # buttons on top
   fluidRow(
@@ -84,7 +86,7 @@ shinyUI(fluidPage(
         ),
     
         column(12, 
-          plotOutput("outplot1", width = "100%")
+          plotlyOutput("outplot1", width = "100%")
         ),
 
         ## second    
@@ -107,7 +109,7 @@ shinyUI(fluidPage(
         ),
         
         column(12, 
-          plotOutput("outplot2", width = "100%")
+          plotlyOutput("outplot2", width = "100%")
         ),
         
         tags$style(type="text/css",
@@ -120,38 +122,18 @@ shinyUI(fluidPage(
         
         column(6, 
           h6('First reserve'),
-          dataTableOutput('tab1')
+          downloadButton('tabsv1', 'Download table'),
+          p(),
+          DTOutput('tab1')
         ), 
         
         column(6, 
           h6('Second reserve'),
-          dataTableOutput('tab2')
+          downloadButton('tabsv2', 'Download table'),
+          p(),
+          DTOutput('tab2')
         )
         
-      ),
-      
-      tabPanel('Downloads',
-        
-        column(6, 
-          h6('First reserve'), 
-          numericInput('height1', 'Plot height (in)', value = 4, min = 0, step = 1),
-          numericInput('width1', 'Plot width (in)', value = 10, min = 0, step = 1),
-          p(),
-          downloadButton('downloadplot1', 'Download plot'),
-          p(),
-          downloadButton('tabsv1', 'Download table')
-        ), 
-        
-        column(6, 
-          h6('Second reserve'), 
-          numericInput('height2', 'Plot height (in)', value = 4, min = 0, step = 1),
-          numericInput('width2', 'Plot width (in)', value = 10, min = 0, step = 1),
-          p(),
-          downloadButton('downloadplot2', 'Download plot'),
-          p(),
-          downloadButton('tabsv2', 'Download table')
-        )
-
       )
       
   ))

@@ -1,5 +1,5 @@
 # summarize input data, create plot
-plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = NULL, lns = TRUE, pts = TRUE, tab = FALSE){
+plo_fun <- function(dat_in, aggby = 'year', rng = NULL, lims = NULL, lns = TRUE, pts = TRUE, tab = FALSE){
 
   # label lookup
   lab_look <- list(
@@ -58,29 +58,52 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, errbar = FALSE, lims = N
     return(data.frame(to_plo, stringsAsFactors = FALSE))
   } 
 
-  # plot
-  p <- ggplot(to_plo, aes(x = datetimestamp, y = ave, colour = stat)) +
-    scale_y_continuous(ylab) +
-    scale_x_date(limits = rng) +
-    theme_minimal() + 
-    theme(
-      legend.title = element_blank(), 
-      legend.position = 'top', 
-      axis.title.x = element_blank(), 
-      axis.line.x = element_line(size = 0.5),
-      axis.line.y = element_line(size = 0.5) 
+  # Initialize empty plotly object
+  p <- plot_ly()
+  
+  # Get unique groups
+  groups <- sort(unique(to_plo[['stat']]))
+  
+  if(pts)
+    md <- 'markers'
+  if(lns)
+    md <- 'lines'
+  if(pts & lns)
+    md <- 'lines+markers'
+  
+  # Add traces for each group
+  for(i in seq_along(groups)) {
+    group_data <- to_plo[to_plo[['stat']] == groups[i], ]
+
+    p <- p %>% add_trace(
+      data = group_data,
+      x = ~datetimestamp,
+      y = ~ave,
+      name = groups[i],
+      type = 'scatter',
+      mode = md
+    )
+
+  }
+
+  if(!is.null(lims))
+    p <- p %>%  
+      layout(
+        yaxis = list(range = list(lims[1], lims[2]))
       )
   
-  # other aesthetic exceptions
-  if(lns)
-    p <- p + geom_line()
-  if(pts)
-    p <- p + geom_point(size = 2.5)
-  if(pts & errbar) 
-    p <- p + geom_errorbar(aes(ymin = min, ymax = max), width = 40)
-  if(!is.null(lims))
-    p <- p + scale_y_continuous(ylab, limits = lims)
-  
+  # disable legend click
+  p <- p %>%  
+    layout(
+      legend = list(
+        itemclick = FALSE,
+        itemdoubleclick = FALSE,
+        groupclick = FALSE
+      ), 
+      xaxis = list(title = ''),
+      yaxis = list(title = ylab)
+    )
+    
   print(p)
   
 }

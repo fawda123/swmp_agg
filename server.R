@@ -77,6 +77,8 @@ shinyServer(function(input, output, session) {
   # select reserve
   output$resv1 <- renderUI({
         
+    req(input$parm1)
+    
     resv1 <- all_dat[[input$parm1]] %>% 
       .$stat %>%
       substr(., 1, 3) %>% 
@@ -165,6 +167,8 @@ shinyServer(function(input, output, session) {
   # select reserve
   output$resv2 <- renderUI({
         
+    req(input$parm2)
+    
     resv2 <- all_dat[[input$parm2]] %>% 
       .$stat %>%
       substr(., 1, 3) %>% 

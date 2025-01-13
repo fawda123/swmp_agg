@@ -52,12 +52,12 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, lims = NULL, lns = TRUE,
   else
     rng <- range(to_plo$datetimestamp, na.rm = TRUE)
   
+  to_plo <- to_plo[to_plo$datetimestamp >= rng[1] & to_plo$datetimestamp <= rng[2], ]
+  
   # return table if T
-  if(tab){
-    to_plo <- to_plo[to_plo$datetimestamp >= rng[1] & to_plo$datetimestamp <= rng[2], ]
+  if(tab)
     return(data.frame(to_plo, stringsAsFactors = FALSE))
-  } 
-
+           
   # Initialize empty plotly object
   p <- plot_ly()
   
@@ -91,16 +91,20 @@ plo_fun <- function(dat_in, aggby = 'year', rng = NULL, lims = NULL, lns = TRUE,
       layout(
         yaxis = list(range = list(lims[1], lims[2]))
       )
-  
+
   # disable legend click
   p <- p %>%  
     layout(
       legend = list(
         itemclick = FALSE,
         itemdoubleclick = FALSE,
-        groupclick = FALSE
+        groupclick = FALSE,
+        orientation = 'h', 
+        xanchor = 'center', 
+        x = 0.5, 
+        y = 1.1
       ), 
-      xaxis = list(title = ''),
+      xaxis = list(title = '', range = list(rng[1], rng[2])),
       yaxis = list(title = ylab)
     )
     
